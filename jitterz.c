@@ -103,7 +103,7 @@ static void display_help(int error)
 	printf("jitterz V %1.2f\n", VERSION);
 	printf("Usage:\n"
 	       "jitterz <options>\n\n"
-	       "-c NUM   --cpu=NUM         which cpu to run on"
+	       "-c NUM   --cpu=NUM         which cpu to run on\n"
 	       "         --clock=CLOCK     select clock\n"
 	       "                           0 = CLOCK_MONOTONIC (default)\n"
 	       "                           1 = CLOCK_REALTIME\n"
