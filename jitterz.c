@@ -71,21 +71,28 @@ static int set_sched()
 static long read_cpuinfo_cur_freq(int core_i)
 {
 	uint64_t fs = -1;
-	char path[80];
-	struct stat sb;
+	char path[120];
+	FILE *f = 0;
 
-	snprintf(path, 80,
-		 "/sys/devices/system/cpu/cpu%d/cpufreq/cpuinfo_cur_freq",
+	/* scaling_cur_freq is current kernel /sys file */
+	snprintf(path, 120,
+		 "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_cur_freq",
 		 core_i);
-	if (!stat(path, &sb)) {
-		FILE *f = 0;
-		f = fopen(path, "rt");
-		if (f) {
-			fscanf(f, "%lu", &fs);
-			fclose(f);
-		} else {
-			perror(path);
+
+	if (access(path, F_OK) == -1) {
+		/* old /sys file is cpuinfo_cur_freq */
+		snprintf(path, 120,
+			 "/sys/devices/system/cpu/cpu%d/cpufreq/cpuinfo_cur_freq",
+			 core_i);
+		if (access(path, F_OK) == -1) {
+			perror("no cpu frequency /sys file available!");
+			exit(errno);
 		}
+	}
+	f = fopen(path, "rt");
+	if (f) {
+		fscanf(f, "%lu", &fs);
+		fclose(f);
 	} else {
 		perror(path);
 	}
